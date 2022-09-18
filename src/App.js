@@ -1,62 +1,79 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import Amplify from "aws-amplify";
+import { Amplify, Auth } from "aws-amplify";
 import awsExports from "./aws-exports";
 import {withAuthenticator} from '@aws-amplify/ui-react'
-import Evidently from "aws-sdk/clients/evidently";
-import {Auth} from "@aws-amplify/auth";
 import {useEffect, useState} from "react";
+import { Evidently } from '@aws-sdk/client-evidently';
+import { Header } from "./Header";
+import { Footer } from "./Footer";
+import { SignInHeader } from "./SignInHeader";
+import { SignInFooter } from "./SignInFooter";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+
 
 Amplify.configure(awsExports);
 
 async function getEvaluateFeature(){
+  const credentials  = await Auth.currentCredentials();
+  const userinfo  = await Auth.currentUserInfo();
 
-    const credentials  = await Auth.currentCredentials();
-    const userinfo  = await Auth.currentUserInfo();
-    console.log(userinfo)
+  console.log(userinfo)
 
-    // Initialize the Amazon CloudWatch Evidently client
-    const evidently = new Evidently({
-        endpoint: 'https://evidently.ap-northeast-1.amazonaws.com',
-        credentials: credentials,
-        region: 'ap-northeast-1'
-    });
+  // Initialize the Amazon CloudWatch Evidently client
+  const evidently = new Evidently({
+    endpoint: 'https://evidently.ap-northeast-1.amazonaws.com',
+    credentials: credentials,
+    region: 'ap-northeast-1'
+  });
 
-    // API request structure
-    const evaluateFeatureRequest = {
-        // entityId for calling evaluate feature API
-        entityId: userinfo.username,
-        // Name of your feature
-        feature: 'example-feature-1',
-        // Name of your project
-        project: "Evidently-Test-Project",
-    };
+  // API request structure
+  const evaluateFeatureRequest = {
+    // entityId for calling evaluate feature API
+    entityId: userinfo.username,
+    // Name of your feature
+    feature: 'example-feature-1',
+    // Name of your project
+    project: "Evidently-Test-Project",
+  };
 
-    return evidently.evaluateFeature(evaluateFeatureRequest).promise();
+  return evidently.evaluateFeature(evaluateFeatureRequest).promise();
 }
 
 function App() {
+  const [variation, setVariation] = useState();
 
-    const [variation, setVariation] = useState();
+  useEffect(() => {
+    (async() =>{
+     const res = await getEvaluateFeature();
+     console.log(res)
+     console.log(res.value)
+     setVariation(res.value.boolValue)
+    })()
+  },[])
 
-    useEffect(() => {
-        (async() =>{
-         const res = await getEvaluateFeature();
-         console.log(res)
-         console.log(res.value)
-         setVariation(res.value.boolValue)
-        })()
-    },[])
-
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          type: 'dark',
+          primary: {
+           main: '#FFFFFF',
+         },
+         secondary: {
+           main: '#e50914',
+         },
+        },
+      }),
+    [prefersDarkMode],
+  );
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-          { variation &&
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        { variation &&
           <a
               className="App-link"
               href="https://reactjs.org"
@@ -65,11 +82,19 @@ function App() {
           >
               Learn React
           </a>
-          }
-      </header>
-    </div>
+        }
+      </div>
+    </ThemeProvider>
   );
 }
 
-export default withAuthenticator(App)
-
+export default withAuthenticator(App, {
+  components: {
+    Header,
+    SignIn: {
+      Header: SignInHeader,
+      Footer: SignInFooter
+    },
+    Footer
+  }
+});

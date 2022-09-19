@@ -1,4 +1,5 @@
 import { Flex, Text, useTheme } from "@aws-amplify/ui-react";
+import React from 'react';
 
 export function Footer() {
   const { tokens } = useTheme();

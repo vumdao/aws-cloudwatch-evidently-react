@@ -1,4 +1,5 @@
 import { Heading, useTheme } from "@aws-amplify/ui-react";
+import React from 'react';
 
 export function SignInHeader() {
   const { tokens } = useTheme();

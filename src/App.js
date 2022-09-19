@@ -1,9 +1,8 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import { Amplify, Auth } from "aws-amplify";
 import awsExports from "./aws-exports";
 import {withAuthenticator} from '@aws-amplify/ui-react'
-import {useEffect, useState} from "react";
 import { Evidently } from '@aws-sdk/client-evidently';
 import { Header } from "./Header";
 import { Footer } from "./Footer";

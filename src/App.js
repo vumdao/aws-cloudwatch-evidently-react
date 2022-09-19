@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import logo from './logo.svg';
 import './App.css';
+import "@aws-amplify/ui-react/styles.css";
 import { Amplify, Auth } from "aws-amplify";
 import awsExports from "./aws-exports";
 import {withAuthenticator} from '@aws-amplify/ui-react'
@@ -11,7 +13,6 @@ import { SignInFooter } from "./SignInFooter";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
-
 Amplify.configure(awsExports);
 
 async function getEvaluateFeature(){
@@ -22,9 +23,9 @@ async function getEvaluateFeature(){
 
   // Initialize the Amazon CloudWatch Evidently client
   const evidently = new Evidently({
-    endpoint: 'https://evidently.ap-northeast-1.amazonaws.com',
+    endpoint: 'https://evidently.ap-southeast-1.amazonaws.com',
     credentials: credentials,
-    region: 'ap-northeast-1'
+    region: 'ap-southeast-1'
   });
 
   // API request structure
@@ -32,12 +33,12 @@ async function getEvaluateFeature(){
     // entityId for calling evaluate feature API
     entityId: userinfo.username,
     // Name of your feature
-    feature: 'example-feature-1',
+    feature: 'sin-d1-evidently-demo-editable-guest-book',
     // Name of your project
-    project: "Evidently-Test-Project",
+    project: "sin-d1-evidently-demo-evidently-demo",
   };
 
-  return evidently.evaluateFeature(evaluateFeatureRequest).promise();
+  return evidently.evaluateFeature(evaluateFeatureRequest);
 }
 
 function App() {
@@ -72,16 +73,22 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
-        { variation &&
-          <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-          >
-              Learn React
-          </a>
-        }
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.js</code> and save to reload.
+          </p>
+            { variation &&
+            <a
+                className="App-link"
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Learn React
+            </a>
+            }
+        </header>
       </div>
     </ThemeProvider>
   );

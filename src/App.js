@@ -15,7 +15,34 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
 Amplify.configure(awsExports);
 
+async function putProjectEvent(client, user, elapse){
+  const _data = {
+    entityId: user.username,
+    details: {
+      loadTime: elapse,
+    }
+  };
+
+  const params = {
+    events: [
+      {
+        data: JSON.stringify(_data),
+        timestamp: new Date(),
+        type: 'aws.evidently.evaluation'
+      }
+    ],
+    project: 'sin-d1-evidently-demo-evidently-demo'
+  };
+
+  client.putProjectEvents(params, function(err, data) {
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
+  });
+}
+
 async function getEvaluateFeature(){
+  const start = Date.now();
+
   const credentials  = await Auth.currentCredentials();
   const userinfo  = await Auth.currentUserInfo();
 
@@ -38,7 +65,12 @@ async function getEvaluateFeature(){
     project: "sin-d1-evidently-demo-evidently-demo",
   };
 
-  return evidently.evaluateFeature(evaluateFeatureRequest);
+
+
+  const res = evidently.evaluateFeature(evaluateFeatureRequest);
+  const elapse = Date.now() - start;
+  putProjectEvent(evidently, userinfo, elapse);
+  return res;
 }
 
 function App() {

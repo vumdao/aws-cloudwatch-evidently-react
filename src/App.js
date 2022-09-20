@@ -33,7 +33,7 @@ async function getEvaluateFeature(){
     // entityId for calling evaluate feature API
     entityId: userinfo.username,
     // Name of your feature
-    feature: 'sin-d1-evidently-demo-editable-guest-book',
+    feature: 'sin-d1-evidently-demo-evaluation-demo',
     // Name of your project
     project: "sin-d1-evidently-demo-evidently-demo",
   };

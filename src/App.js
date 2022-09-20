@@ -28,7 +28,7 @@ async function putProjectEvent(client, user, elapse){
       {
         data: JSON.stringify(_data),
         timestamp: new Date(),
-        type: 'aws.evidently.evaluation'
+        type: 'aws.evidently.custom'
       }
     ],
     project: 'sin-d1-evidently-demo-evidently-demo'
@@ -64,8 +64,6 @@ async function getEvaluateFeature(){
     // Name of your project
     project: "sin-d1-evidently-demo-evidently-demo",
   };
-
-
 
   const res = evidently.evaluateFeature(evaluateFeatureRequest);
   const elapse = Date.now() - start;
